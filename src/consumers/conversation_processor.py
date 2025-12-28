@@ -5,8 +5,9 @@ from typing import Any, Dict
 
 from ..config import Settings
 from ..kafka import BaseKafkaConsumer, KafkaProducerService
-from ..models import SupportMessage, ConversationState, SummaryResult
-from ..ai.mock_intelligence import MockIntelligenceService
+from ..models import SupportMessage, ConversationState, SummaryResult, AggregatedIntelligence
+from ..ai.mock_intelligence_progressive import MockIntelligenceService
+from ..api.websocket import broadcast_intelligence
 
 logger = logging.getLogger(__name__)
 
@@ -117,30 +118,32 @@ class ConversationProcessorConsumer(BaseKafkaConsumer):
         )
     
     async def _process_message_mock_mode(self, support_message: SupportMessage) -> None:
-        """Mock mode - returns hardcoded intelligence data for testing.
+        """Mock mode - returns progressive hardcoded intelligence data for testing.
         
         Args:
             support_message: The support message to process
         """
         logger.debug(f"🧪 [MOCK MODE] Processing message: {support_message.message[:50]}...")
         
-        # Generate mock intelligence data
-        mock_data = self.mock_service.get_mock_intelligence(
+        # Define broadcast callback
+        async def broadcast_update(intelligence_data: dict):
+            """Broadcast a single intelligence update."""
+            agg_intel = AggregatedIntelligence(**intelligence_data)
+            await broadcast_intelligence(support_message.conversation_id, agg_intel)
+            logger.info(
+                f"🧪 [MOCK MODE] Broadcasted progressive update for {support_message.conversation_id}",
+                extra={
+                    "conversation_id": support_message.conversation_id,
+                    "sentiment": agg_intel.sentiment.sentiment if agg_intel.sentiment else None,
+                    "has_pii": agg_intel.pii.has_pii if agg_intel.pii else False,
+                }
+            )
+        
+        # Generate and broadcast progressive mock intelligence updates
+        await self.mock_service.get_progressive_updates(
             conversation_id=support_message.conversation_id,
             tenant_id=support_message.tenant_id,
             message_text=support_message.message,
-            sender=support_message.sender.value
-        )
-        
-        # Produce directly to aggregated topic (skip all agent processing)
-        await self.producer_service.produce(
-            topic=self.settings.kafka_topic_ai_aggregated,
-            value=mock_data,
-            key=support_message.conversation_id,
-            tenant_id=support_message.tenant_id,
-        )
-        
-        logger.info(
-            f"🧪 [MOCK MODE] Published mock intelligence for {support_message.conversation_id}",
-            extra={"conversation_id": support_message.conversation_id}
+            sender=support_message.sender.value,
+            broadcast_callback=broadcast_update
         )

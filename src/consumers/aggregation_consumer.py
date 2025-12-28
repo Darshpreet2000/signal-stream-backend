@@ -45,6 +45,9 @@ class AggregationConsumer(BaseKafkaConsumer):
 
         # In-memory cache of aggregated intelligence
         self.intelligence_cache: Dict[str, AggregatedIntelligence] = {}
+        
+        # Track last broadcast timestamp to prevent duplicate broadcasts for same message
+        self.last_broadcast_timestamp: Dict[str, str] = {}
 
     async def process_message(self, message: Dict[str, Any], headers: Dict[str, str]) -> None:
         """Aggregate AI agent output.
@@ -138,8 +141,18 @@ class AggregationConsumer(BaseKafkaConsumer):
             )
             
             if all_complete:
-                logger.debug(f"All 4 agents completed for {conversation_id}, broadcasting to WebSocket clients")
-                await broadcast_intelligence(conversation_id, agg_intel)
+                # Check if this is a new complete update (avoid duplicate broadcasts)
+                current_timestamp = agg_intel.last_updated.isoformat()
+                last_broadcast = self.last_broadcast_timestamp.get(cache_key)
+                
+                if last_broadcast != current_timestamp:
+                    logger.debug(f"All 4 agents completed for {conversation_id}, broadcasting to WebSocket clients")
+                    await broadcast_intelligence(conversation_id, agg_intel)
+                    
+                    # Update last broadcast timestamp
+                    self.last_broadcast_timestamp[cache_key] = current_timestamp
+                else:
+                    logger.debug(f"Skipping duplicate broadcast for {conversation_id} (already broadcast at {current_timestamp})")
             else:
                 logger.debug(f"Waiting for more agents to complete before broadcasting (S:{agg_intel.sentiment is not None} P:{agg_intel.pii is not None} I:{agg_intel.insights is not None} Su:{agg_intel.summary is not None})")
 

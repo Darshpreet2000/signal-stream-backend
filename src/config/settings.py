@@ -1,171 +1,6 @@
 """Application settings and configuration using Pydantic."""
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        }            "last_updated": now            },                "timestamp": now                "next_steps": next_steps,                "key_points": key_points,                "agent_response": agent_response,                "customer_issue": customer_issue,                "tldr": tldr,                "tenant_id": tenant_id,                "conversation_id": conversation_id,            "summary": {            },                "timestamp": now                "key_concerns": ["Locked out of account", "Inability to pay bills" if urgency == "Critical" else "Inability to pay bills on time"],                "estimated_resolution_time": "< 1 hour",                "requires_escalation": requires_escalation,                ] + (["Escalate to senior support"] if requires_escalation else []),                    "Provide immediate resolution"                    "Apologize and acknowledge frustration",                "suggested_actions": [                "categories": ["Account Access", "Financial" if urgency == "Critical" else "Technical Support"],                "urgency": urgency,                "intent": "Account Issue",                "tenant_id": tenant_id,                "conversation_id": conversation_id,            "insights": {            },                "timestamp": now                "redacted_text": redacted_text,                "entities": pii_entities,                "has_pii": self.has_pii,                "tenant_id": tenant_id,                "conversation_id": conversation_id,            "pii": {            },                "timestamp": now                "reasoning": reasoning,                "emotion": emotion_type,                "confidence": confidence,                "sentiment": sentiment_type,                "tenant_id": tenant_id,                "conversation_id": conversation_id,            "sentiment": {            "tenant_id": tenant_id,            "conversation_id": conversation_id,        return {                now = datetime.utcnow().isoformat()                    urgency = "Critical"            requires_escalation = True            ]                "Agent to investigate the cause of the account lockout."                "Agent to verify customer's identity.",            next_steps = [                key_points.append("Customer provided account details and contact information.")            if self.message_count > 2:            ]                "Customer has bills due today."                "Customer is frustrated and needs immediate assistance.",            key_points = [            agent_response = "Agent expresses empathy and commits to resolving the issue quickly." if self.message_count > 1 else None            customer_issue = "Customer is locked out of their bank account and cannot access funds to pay bills due today."            tldr = "Customer is locked out of their bank account and needs immediate access to funds to pay bills."            issue_resolved = False        else:            urgency = "Critical"            requires_escalation = False            next_steps = ["Customer to confirm account access.", "Monitor account activity."]            ]                "Customer can now access their account."                "Customer's account lockout resolved.",            key_points = [            agent_response = "Account restriction removed, online access reset, and bill-pay grace period extended."            customer_issue = "Customer was locked out of their bank account."            tldr = "Customer's account lockout resolved; access restored, bill-pay grace period extended."            issue_resolved = False        elif self.message_count > 3:            urgency = "High"            requires_escalation = False            next_steps = ["Monitor account activity.", "Close the support ticket."]            ]                "Customer confirmed account access."                "Customer can now access their account.",                "Customer's account lockout resolved.",            key_points = [            agent_response = "Account access restored."            customer_issue = "Customer was locked out of their bank account."            tldr = "Customer account access restored; issue resolved; customer confirmed access."            issue_resolved = True        if self.message_count > 5 and sender == "agent":        # Determine issue resolution status                    redacted_text = message_text            pii_entities = []        else:            redacted_text = message_text.replace("Sarah Lee", "[REDACTED]").replace("4421", "[REDACTED]").replace("24456455", "[REDACTED]")            ]                {"type": "phone", "value": "24456455", "start_index": 58, "end_index": 66}                {"type": "account_number", "value": "4421", "start_index": 35, "end_index": 39},                {"type": "name", "value": "Sarah Lee", "start_index": 10, "end_index": 19},            pii_entities = [        if self.has_pii:        # Build PII data                    reasoning = "The customer is providing information or responding neutrally."            confidence = 0.8            emotion_type = "neutral"            sentiment_type = "neutral"        else:            reasoning = "The customer expresses frustration and urgency. The language used indicates a negative emotional state."            confidence = 0.95            emotion_type = "frustrated"            sentiment_type = "negative"        elif any(word in message_text.lower() for word in ["frustrat", "locked", "urgent", "need this fixed"]):            reasoning = "The customer expresses relief and thanks, indicating satisfaction after the issue was resolved."            confidence = 0.95            emotion_type = "satisfied"            sentiment_type = "positive"        if any(word in message_text.lower() for word in ["relief", "thanks", "thank", "great", "perfect", "solved"]):        # Determine sentiment based on message content                    self.has_pii = True        if "name is" in message_text.lower() or any(char.isdigit() for char in message_text):        # Detect PII in message                self.message_count += 1        """            Mock intelligence data        Returns:                        sender: Message sender (customer/agent)            message_text: The message text            tenant_id: Tenant ID            conversation_id: Conversation ID        Args:                """Get mock intelligence data based on message progression.    ) -> Dict[str, Any]:        self, conversation_id: str, tenant_id: str, message_text: str, sender: str    def get_mock_intelligence(        self.has_pii = False        self.message_count = 0        """Initialize mock data scenarios."""    def __init__(self):    """Service that provides mock intelligence data for testing."""class MockIntelligenceService:)    EmotionType,    SentimentType,    IntelligenceData,    SummaryResult,    InsightsResult,    PIIResult,    SentimentResult,from ..models import (from typing import Dict, Anyfrom datetime import datetimefrom functools import lru_cache
+from functools import lru_cache
 from pathlib import Path
 from typing import List, Union, Any, Optional
 
@@ -342,11 +177,11 @@ class Settings(BaseSettings):
         if protocol != "PLAINTEXT":
             config.update(
                 {
-                    "sasl.mechanism": self.kafka_sasl_mechanism,  # Fixed: singular not plural
+                    "sasl.mechanism": self.kafka_sasl_mechanism,
                     "sasl.username": self.kafka_api_key_effective,
                     "sasl.password": self.kafka_api_secret_effective,
-                    # Fix for macOS SSL certificate issue
-                    "ssl.ca.location": "/etc/ssl/cert.pem",
+                    # SSL certificate location for Cloud Run
+                    "ssl.ca.location": "/etc/ssl/certs/ca-certificates.crt",
                 }
             )
 
