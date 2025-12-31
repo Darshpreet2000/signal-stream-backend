@@ -898,7 +898,19 @@ kafka-consumer-groups --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS \
 
 ---
 
-## 🙏 Built With
+## � License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+**MIT License** is an OSI-approved open source license that allows:
+- ✅ Commercial use
+- ✅ Modification
+- ✅ Distribution
+- ✅ Private use
+
+---
+
+## �🙏 Built With
 
 - **Confluent Cloud** - Managed Kafka platform
 - **Google Gemini** - Generative AI models
