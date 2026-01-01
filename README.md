@@ -12,6 +12,20 @@
 
 ---
 
+## 🔗 Related Links
+
+- 🎨 **Frontend Repository**: [signal-stream-frontend](https://github.com/Darshpreet2000/signal-stream-frontend)
+- 🌐 **Live UI**: https://signal-stream-ai.web.app/
+- 🔧 **Backend API**: https://stream-chat-backend-628679433907.us-central1.run.app/
+
+---
+
+## 📸 System Overview
+
+![SignalStream AI Dashboard](Screenshot%202026-01-01%20at%2012.47.19%20AM.png)
+
+---
+
 ## 🎯 What This Is
 
 The **backend** of SignalStream AI is a production-grade event-driven platform that powers real-time support intelligence. Built for the [Google Cloud AI Partner Catalyst Hackathon](https://ai-partner-catalyst.devpost.com/) (**Confluent + GCP Category**), it showcases:
