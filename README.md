@@ -22,7 +22,7 @@
 
 ## 📸 System Overview
 
-![SignalStream AI Dashboard](Screenshot%202026-01-01%20at%2012.47.19%20AM.png)
+![SignalStream AI Dashboard](https://raw.githubusercontent.com/Darshpreet2000/signal-stream-backend/refs/heads/main/Screenshot%202026-01-01%20at%2012.47.19%E2%80%AFAM.png)
 
 ---
 
